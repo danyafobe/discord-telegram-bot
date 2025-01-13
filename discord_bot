@@ -2,12 +2,20 @@ import discord
 import requests
 
 # Вставьте токен вашего Discord-бота
-DISCORD_TOKEN = 'bd7aa9dbc32b8616c857ddd826a4705e4933230559209124f0a405f7f1e7ee9f'
+DISCORD_TOKEN = 'YOUR_DISCORD_BOT_TOKEN'
 
 # Вставьте токен вашего Telegram-бота
-TELEGRAM_TOKEN = '7779652388:AAGGafy1eNbWCOWDvk_VG0URRSrw7VdCxXY'
+TELEGRAM_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 
-# chat_id и topic_id для топиков
+# Идентификаторы каналов в Discord
+channel_ids = {
+    1320931474547150888: 'announcement',       # Замените на реальный ID канала
+    1320931531975299184: 'minor-announcement',  # Замените на реальный ID канала
+    1320931655073927170: 'patch-notes',         # Замените на реальный ID канала
+    1320931595653349386: 'x-posts'              # Замените на реальный ID канала
+}
+
+# chat_id и topic_id для топиков Telegram
 topic_ids = {
     'announcement': {'chat_id': '-1002302673125', 'topic_id': 42},
     'minor-announcement': {'chat_id': '-1002302673125', 'topic_id': 43},
@@ -22,6 +30,7 @@ client = discord.Client(intents=intents)
 
 # Функция для отправки сообщений в Telegram
 def send_to_telegram(message, topic):
+    # Получаем chat_id и topic_id для указанного топика
     chat_id = topic_ids.get(topic, {}).get('chat_id')
     topic_id = topic_ids.get(topic, {}).get('topic_id')
 
@@ -41,18 +50,21 @@ def send_to_telegram(message, topic):
     else:
         print(f"Invalid topic: {topic}")
 
+# Слушаем события в Discord
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.channel.name == 'announcement':
+    # Проверяем ID канала, из которого пришло сообщение
+    if message.channel.id == 123456789012345678:  # ID для 'announcement'
         send_to_telegram(message.content, 'announcement')
-    elif message.channel.name == 'minor-announcement':
+    elif message.channel.id == 234567890123456789:  # ID для 'minor-announcement'
         send_to_telegram(message.content, 'minor-announcement')
-    elif message.channel.name == 'patch-notes':
+    elif message.channel.id == 345678901234567890:  # ID для 'patch-notes'
         send_to_telegram(message.content, 'patch-notes')
-    elif message.channel.name == 'x-posts':
+    elif message.channel.id == 456789012345678901:  # ID для 'x-posts'
         send_to_telegram(message.content, 'x-posts')
 
+# Запуск бота
 client.run(DISCORD_TOKEN)
