@@ -1,0 +1,58 @@
+import discord
+import requests
+
+# Вставьте токен вашего Discord-бота
+DISCORD_TOKEN = 'bd7aa9dbc32b8616c857ddd826a4705e4933230559209124f0a405f7f1e7ee9f'
+
+# Вставьте токен вашего Telegram-бота
+TELEGRAM_TOKEN = '7779652388:AAGGafy1eNbWCOWDvk_VG0URRSrw7VdCxXY'
+
+# chat_id и topic_id для топиков
+topic_ids = {
+    'announcement': {'chat_id': '-1002302673125', 'topic_id': 42},
+    'minor-announcement': {'chat_id': '-1002302673125', 'topic_id': 43},
+    'patch-notes': {'chat_id': '-1002302673125', 'topic_id': 44},
+    'x-posts': {'chat_id': '-1002302673125', 'topic_id': 45}
+}
+
+# Настройка клиента для Discord
+intents = discord.Intents.default()
+intents.messages = True
+client = discord.Client(intents=intents)
+
+# Функция для отправки сообщений в Telegram
+def send_to_telegram(message, topic):
+    chat_id = topic_ids.get(topic, {}).get('chat_id')
+    topic_id = topic_ids.get(topic, {}).get('topic_id')
+
+    if chat_id and topic_id:
+        url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage'
+        params = {
+            'chat_id': chat_id,
+            'message_thread_id': topic_id,
+            'text': message
+        }
+        
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            print(f"Message sent to Telegram topic '{topic}' successfully.")
+        else:
+            print(f"Failed to send message to Telegram. Status Code: {response.status_code}")
+    else:
+        print(f"Invalid topic: {topic}")
+
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.channel.name == 'announcement':
+        send_to_telegram(message.content, 'announcement')
+    elif message.channel.name == 'minor-announcement':
+        send_to_telegram(message.content, 'minor-announcement')
+    elif message.channel.name == 'patch-notes':
+        send_to_telegram(message.content, 'patch-notes')
+    elif message.channel.name == 'x-posts':
+        send_to_telegram(message.content, 'x-posts')
+
+client.run(DISCORD_TOKEN)
