@@ -1,0 +1,28 @@
+import requests
+import discord
+
+# Вставьте токен вашего Telegram-бота
+TELEGRAM_TOKEN = '7779652388:AAGGafy1eNbWCOWDvk_VG0URRSrw7VdCxXY'
+
+# Вставьте токен вашего Discord-бота
+DISCORD_TOKEN = 'bd7aa9dbc32b8616c857ddd826a4705e4933230559209124f0a405f7f1e7ee9f'
+
+# chat_id и topic_id для топиков
+topic_ids = {
+    'Announcement': {'chat_id': '-1002302673125', 'topic_id': 42},
+    'Minor-Announcement': {'chat_id': '-1002302673125', 'topic_id': 43},
+    'Patch-notes': {'chat_id': '-1002302673125', 'topic_id': 44},
+    'x-posts': {'chat_id': '-1002302673125', 'topic_id': 45}
+}
+
+# Слушаем события в Telegram (с помощью webhook или polling)
+def send_to_discord(message, topic):
+    url = f'https://discord.com/api/webhooks/{DISCORD_TOKEN}/sendMessage'
+    params = {
+        'content': message,
+    }
+    response = requests.post(url, json=params)
+    if response.status_code == 200:
+        print(f"Message sent to Discord channel '{topic}' successfully.")
+    else:
+        print(f"Failed to send message to Discord. Status Code: {response.status_code}")
